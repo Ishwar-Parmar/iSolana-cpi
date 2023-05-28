@@ -1,24 +1,29 @@
-use anchor_lang::{
-    prelude::*,
-    solana_program::{program::invoke, program::invoke_signed, system_instruction},
-};
+use anchor_lang::prelude::*;
+use add_num::cpi::accounts::Adder;
+use add_num::program::AddNumbers;
+use add_num::{self, Total};
 
 
-declare_id!("EnjN3cm7xYqYHNUZbQfhJYj5S5RBrSU9tc5aHwQ6LqvT");
+declare_id!("ABoYG2GWbzLgnnGhK2pUGNupzKoYe7UGk2idrAXbstAS");
 
 
 #[program]
 pub mod i_cpi {
     use super::*;
-    pub fn summation(ctx: Context<Summation>, n1: u64, n2: u64) -> Result<()> {
-        
-        let total = &mut ctx.accounts.sum;
-
+    pub fn summation(ctx: Context<Summation>,  num1: u32, num2: u32,) -> Result<()> {
         msg!("number 1: {}", &n1);
         msg!("number 2: {}", &n2);
 
-        total.total = &n1 + &n2;
+        add_num::cpi::adder(
+            CpiContext::new(
+                ctx.accounts.add_num.to_account_info(),
 
+                let cpi_accounts = AddNumbers {
+                    total: ctx.accounts.adder.to_account_info(),
+                };
+            ),
+            num1, num2
+        )
         Ok(())
     }
 }
@@ -26,9 +31,7 @@ pub mod i_cpi {
 
 #[derive(Accounts)]
 pub struct Summation<'info> {
-    #[account(init, payer = payer, space = 8 + 8)]
-    pub payer: Signer<'info>,
-    pub system_program: Program<'info, System>,
+    #[account(mut)]
+    pub adder: Account<'info, Adder>,
+    pub add_num: Program<'info, AddNumbers>,
 }
-
-

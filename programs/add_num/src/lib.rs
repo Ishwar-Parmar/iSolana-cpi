@@ -5,9 +5,12 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 #[program]
 pub mod add_num {
     use super::*;
+    pub fn initialize(_ctx: Context<InitializeAdd>) -> Result<()> {
+        Ok(())
+    }
 
-    pub fn add_numbers(
-        ctx: Context<AddNumbers>,
+    pub fn adder(
+        ctx: Context<Adder>,
         num1: u32,
         num2: u32,
     ) -> Result<()> {
@@ -21,9 +24,15 @@ pub mod add_num {
 }
 
 #[derive(Accounts)]
-pub struct AddNumbers<'info> {
-    #[account(signer)]
-    pub authority: AccountInfo<'info>,
+pub struct InitializeAdd<'info> {
+    #[account(init, payer = user, space = 8 + 8)]
+    pub power: Account<'info, Total>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+#[derive(Accounts)]
+pub struct Adder<'info> {
     #[account(mut)]
     pub sum: Account<'info, Total>,
 }
